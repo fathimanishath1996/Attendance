@@ -62,3 +62,29 @@ exports.getAllLeaves = async (req, res) => {
         res.status(500).json({ success: false, message: err.message });
     }
 };
+
+exports.createEmployee = async (req, res) => {
+    const { name, email, password, role } = req.body;
+
+    try {
+        const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+            email,
+            password,
+            email_confirm: true,
+            user_metadata: { name }
+        });
+
+        if (authError) throw authError;
+
+        const { error: updateError } = await supabase
+            .from('users')
+            .update({ name, role: role || 'employee' })
+            .eq('id', authData.user.id);
+
+        if (updateError) throw updateError;
+
+        res.status(200).json({ success: true, message: 'Employee created successfully!' });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};

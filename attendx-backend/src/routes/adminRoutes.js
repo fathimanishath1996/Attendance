@@ -16,5 +16,6 @@ router.get('/users', authenticate, isAdmin, adminController.getAllUsers);
 router.get('/attendance', authenticate, isAdmin, adminController.getAllAttendance);
 router.get('/leaves', authenticate, isAdmin, adminController.getAllLeaves);
 router.post('/leaves/manage', authenticate, isAdmin, adminController.manageLeave);
+router.post('/users/create', authenticate, isAdmin, adminController.createEmployee);
 
 module.exports = router;
