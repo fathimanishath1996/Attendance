@@ -1,10 +1,10 @@
-// Office Coordinates (Replace these with your real office lat/lng)
+// Office Coordinates (Updated to the real office location)
 export const OFFICE_LOCATION = {
-  lat: 12.9716, // Example: Bangalore
-  lng: 77.5946
+  lat: 13.103981,
+  lng: 80.250590
 };
 
-export const MAX_DISTANCE_METERS = 10000000; // Increased to 10,000km for testing purposes
+export const MAX_DISTANCE_METERS = 200; // Set to 200 meters for office proximity
 
 export const calculateDistance = (lat1, lon1, lat2, lon2) => {
   const R = 6371e3; // Earth's radius in meters
