@@ -158,6 +158,9 @@ const AttendancePage = () => {
                   <span>Distance:</span>
                   <span style={{ fontWeight: 'bold' }}>{Math.round(distance)} meters</span>
                 </div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
+                  Current: {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
+                </div>
                 <div style={{ fontSize: '0.875rem', color: distance <= MAX_DISTANCE_METERS ? 'var(--success)' : 'var(--danger)' }}>
                   {distance <= MAX_DISTANCE_METERS ? "✓ Within Range" : "✗ Too far from office"}
                 </div>

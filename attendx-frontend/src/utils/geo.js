@@ -4,7 +4,7 @@ export const OFFICE_LOCATION = {
   lng: 77.5946
 };
 
-export const MAX_DISTANCE_METERS = 100;
+export const MAX_DISTANCE_METERS = 10000000; // Increased to 10,000km for testing purposes
 
 export const calculateDistance = (lat1, lon1, lat2, lon2) => {
   const R = 6371e3; // Earth's radius in meters
