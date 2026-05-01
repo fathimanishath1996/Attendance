@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Users, FileText, Check, X, Eye, Calendar } from 'lucide-react';
+import { Users, FileText, Check, X, Eye, Calendar, Plus } from 'lucide-react';
 import api from '../utils/api';
 
 const AdminPage = () => {
@@ -8,6 +8,8 @@ const AdminPage = () => {
   const [attendance, setAttendance] = useState([]);
   const [leaves, setLeaves] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [newUser, setNewUser] = useState({ name: '', email: '', password: '', role: 'employee' });
 
   useEffect(() => {
     fetchData();
@@ -44,11 +46,29 @@ const AdminPage = () => {
     }
   };
 
+  const handleAddEmployee = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post('/admin/users/create', newUser);
+      alert('Employee created successfully!');
+      setShowUserModal(false);
+      setNewUser({ name: '', email: '', password: '', role: 'employee' });
+      fetchData();
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-      <header style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2.5rem', fontWeight: '800' }}>Admin Control Center</h1>
-        <p style={{ color: 'var(--text-muted)' }}>Manage your workforce and review attendance</p>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+        <div>
+          <h1 style={{ fontSize: '2.5rem', fontWeight: '800' }}>Admin Control Center</h1>
+          <p style={{ color: 'var(--text-muted)' }}>Manage your workforce and review attendance</p>
+        </div>
+        <button className="btn btn-primary" onClick={() => setShowUserModal(true)}>
+          <Plus size={20} /> Add Employee
+        </button>
       </header>
 
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', borderBottom: '1px solid var(--border)' }}>
@@ -195,6 +215,64 @@ const AdminPage = () => {
           </table>
         )}
       </div>
+
+      {/* Add User Modal */}
+      {showUserModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div className="card" style={{ width: '100%', maxWidth: '450px', margin: '1rem' }}>
+            <h2 style={{ marginBottom: '1.5rem' }}>Create New Employee</h2>
+            <form onSubmit={handleAddEmployee} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <label>Full Name</label>
+                <input 
+                  type="text" 
+                  required 
+                  value={newUser.name} 
+                  onChange={(e) => setNewUser({...newUser, name: e.target.value})} 
+                  placeholder="e.g. John Doe"
+                  style={{ padding: '0.75rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }} 
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <label>Email Address</label>
+                <input 
+                  type="email" 
+                  required 
+                  value={newUser.email} 
+                  onChange={(e) => setNewUser({...newUser, email: e.target.value})} 
+                  placeholder="john@company.com"
+                  style={{ padding: '0.75rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }} 
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <label>Initial Password</label>
+                <input 
+                  type="password" 
+                  required 
+                  value={newUser.password} 
+                  onChange={(e) => setNewUser({...newUser, password: e.target.value})} 
+                  style={{ padding: '0.75rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }} 
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <label>Role</label>
+                <select 
+                  value={newUser.role} 
+                  onChange={(e) => setNewUser({...newUser, role: e.target.value})} 
+                  style={{ padding: '0.75rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }}
+                >
+                  <option value="employee">Employee</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>Create Account</button>
+                <button type="button" className="btn" style={{ border: '1px solid var(--border)' }} onClick={() => setShowUserModal(false)}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
