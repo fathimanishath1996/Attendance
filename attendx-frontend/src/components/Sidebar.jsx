@@ -7,10 +7,14 @@ const Sidebar = ({ user, setUser }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [stats, setStatus] = useState({ normal: 0, target: 180, overtime: 0 });
+  const [pendingCount, setPendingCount] = useState(0);
 
   useEffect(() => {
     fetchStats();
-  }, []);
+    if (user.role === 'admin') {
+      fetchPendingCount();
+    }
+  }, [user.role]);
 
   const fetchStats = async () => {
     try {
@@ -22,6 +26,15 @@ const Sidebar = ({ user, setUser }) => {
           overtime: data.total_overtime_hours || 0
         });
       }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchPendingCount = async () => {
+    try {
+      const { data } = await api.get('/admin/leaves/pending-count');
+      setPendingCount(data.count || 0);
     } catch (err) {
       console.error(err);
     }
@@ -41,7 +54,12 @@ const Sidebar = ({ user, setUser }) => {
   ];
 
   if (user.role === 'admin') {
-    navItems.splice(1, 0, { icon: Shield, label: 'Admin Panel', path: '/admin' });
+    navItems.splice(1, 0, { 
+      icon: Shield, 
+      label: 'Admin Panel', 
+      path: '/admin',
+      badge: pendingCount > 0 ? pendingCount : null 
+    });
   }
 
   const progress = Math.min((stats.normal / stats.target) * 100, 100);
@@ -73,10 +91,25 @@ const Sidebar = ({ user, setUser }) => {
               justifyContent: 'flex-start', 
               background: location.pathname === item.path ? 'var(--bg-main)' : 'transparent',
               color: location.pathname === item.path ? 'var(--primary)' : 'var(--text-main)',
-              padding: '0.75rem 1rem'
+              padding: '0.75rem 1rem',
+              position: 'relative'
             }}
           >
-            <item.icon size={20} /> {item.label}
+            <item.icon size={20} /> 
+            <span style={{ flex: 1, textAlign: 'left' }}>{item.label}</span>
+            {item.badge && (
+              <span style={{ 
+                background: 'var(--danger)', 
+                color: 'white', 
+                fontSize: '0.65rem', 
+                padding: '2px 6px', 
+                borderRadius: '10px',
+                fontWeight: 'bold',
+                marginLeft: 'auto'
+              }}>
+                {item.badge}
+              </span>
+            )}
           </button>
         ))}
       </nav>

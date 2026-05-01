@@ -88,3 +88,17 @@ exports.createEmployee = async (req, res) => {
         res.status(500).json({ success: false, message: err.message });
     }
 };
+
+exports.getPendingLeavesCount = async (req, res) => {
+    try {
+        const { count, error } = await supabase
+            .from('leaves')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'pending');
+
+        if (error) throw error;
+        res.status(200).json({ success: true, count: count || 0 });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
